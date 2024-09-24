@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugarland Theaters - Seat Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            margin: 20px 0;
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .screen {
+            background-color: #ccc;
+            height: 50px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 50px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr); /* Increased number of seats */
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .seats button {
+            background-color: #ddd;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .seats button.selected {
+            background-color: #6c63ff;
+            color: #fff;
+        }
+
+        .seats button.occupied {
+            background-color: #444;
+            cursor: not-allowed;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .legend div {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .legend .available span {
+            background-color: #ddd;
+        }
+
+        .legend .selected span {
+            background-color: #6c63ff;
+        }
+
+        .legend .occupied span {
+            background-color: #444;
+        }
+
+        /* Book Button */
+        .book-btn {
+            display: none;
+            background-color: #6c63ff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .book-btn.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Booking Confirmation */
+        .confirmation {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .seats {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .screen {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .seats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .screen {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Sugarland Theaters - Select Your Seat</h1>
+    <div class="container">
+        <div class="screen">SCREEN</div>
+        <div class="seats">
+            <!-- Generating buttons for seats including occupied ones -->
+            <!-- For demonstration, I'll mark some seats as occupied -->
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat occupied"></button>
+            <button class="seat"></button>
+            <button class="seat occupied"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat occupied"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat occupied"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat occupied"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+            <button class="seat"></button>
+        </div>
+        <div class="legend">
+            <div class="available"><span></span> Available</div>
+            <div class="selected"><span></span> Selected</div>
+            <div class="occupied"><span></span> Occupied</div>
+        </div>
+        <button class="book-btn">Book</button>
+        <div class="confirmation"></div>
+    </div>
+
+    <script>
+        const seats = document.querySelectorAll('.seats .seat'); // All seats, including occupied
+        const bookBtn = document.querySelector('.book-btn');
+        const confirmation = document.querySelector('.confirmation');
+
+        function updateSelectedSeats() {
+            const selectedSeats = document.querySelectorAll('.seats .seat.selected');
+            if (selectedSeats.length > 0) {
+                bookBtn.classList.add('show'); // Show book button
+            } else {
+                bookBtn.classList.remove('show'); // Hide book button if no seat is selected
+            }
+        }
+
+        // Assign seat numbers to each button and manage seat selection
+        seats.forEach((seat, index) => {
+            seat.addEventListener('click', () => {
+                if (!seat.classList.contains('occupied')) {
+                    seat.classList.toggle('selected');
+                    updateSelectedSeats();
+                }
+            });
+        });
+
+        bookBtn.addEventListener('click', () => {
+            const selectedSeats = document.querySelectorAll('.seats .seat.selected');
+            const seatNumbers = [...selectedSeats].map(seat => [...seats].indexOf(seat) + 1); // Seat numbering with occupied seats included
+            
+            // Show confirmation message
+            confirmation.innerHTML = `<p>You have booked seat(s): <strong>${seatNumbers.join(', ')}</strong></p>
+                                      <p>Enjoy the movie! 🍿🎬</p>`;
+            confirmation.style.display = 'block';
+
+            // Hide the book button
+            bookBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
